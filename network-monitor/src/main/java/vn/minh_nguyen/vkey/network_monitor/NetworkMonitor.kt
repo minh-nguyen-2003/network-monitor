@@ -17,7 +17,6 @@ import androidx.annotation.RequiresPermission
 
 /**
  * Theo dõi trạng thái mạng toàn app và hiển thị dialog khi mất mạng.
- *
  * Hỗ trợ minSdk 21+.
  */
 class NetworkMonitor(
@@ -55,10 +54,7 @@ class NetworkMonitor(
     fun start() {
         app.registerActivityLifecycleCallbacks(this)
         registerNetworkCallback()
-
-        if (!isNetworkAvailable()) {
-            currentActivity?.let { safeShow(it) }
-        }
+        // Không kiểm tra mạng ở đây nữa vì Activity chưa sẵn sàng
     }
 
     /** Ngừng theo dõi mạng */
@@ -127,8 +123,12 @@ class NetworkMonitor(
 
     // ----------------- Application.ActivityLifecycleCallbacks -----------------
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
+
     override fun onActivityStarted(activity: Activity) {
         currentActivity = activity
+        if (!isNetworkAvailable()) {
+            safeShow(activity)
+        }
     }
 
     override fun onActivityResumed(activity: Activity) {
